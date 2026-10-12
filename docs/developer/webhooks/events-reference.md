@@ -111,9 +111,9 @@ Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
     "qualification": "Bachelor of Commerce",
     "subject": "Finance",
     "grading_scale": "Most Common",
-    "gpa": 3.76900,
-    "total_credits": 120.00,
-    "total_points": 452.28000,
+    "gpa": 3.77,
+    "total_credits": 120.0,
+    "total_points": 452.4,
     "courses": null
   }
 }
