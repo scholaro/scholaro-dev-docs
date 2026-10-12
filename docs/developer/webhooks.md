@@ -1,18 +1,22 @@
 # Webhooks
 
-Use Scholaro webhooks to send report events and delivery events to external systems.
+Use Scholaro webhooks to receive data when GPA reports and digital evaluations are created or updated, and to deliver report PDFs to external systems.
 
-The Webhooks section covers the available event types, PDF delivery behavior, and destination-specific setup guidance for downstream systems.
+The Webhooks section covers endpoint setup, every event and its payload, signature verification, PDF delivery, and setup guidance for downstream systems.
 
 ## In this section
 
 ### Overview
 
-Start here for the high-level webhook flow and related documentation.
+Start here: how to set up and register an endpoint, and how deliveries behave.
 
 ### Events Reference
 
-Lists the currently documented webhook events and summarizes how delivery processing works.
+Lists every webhook event, when it is sent, and the fields in its payload.
+
+### Signature Verification
+
+Explains how to check the `X-Scholaro-Signature` header, with code examples.
 
 ### PDF Delivery Events
 
@@ -26,6 +30,7 @@ Covers the Salesforce-specific setup required for delivering files through the S
 
 - [General Overview](webhooks/overview.md)
 - [Events Reference](webhooks/events-reference.md)
+- [Signature Verification](webhooks/signature-verification.md)
 - [PDF Delivery Events](webhooks/pdf-delivery-events.md)
 - [TargetX / Salesforce File Delivery](webhooks/targetx-salesforce-file-delivery.md)
 - [Slate Integration Setup](integrations/slate-integration-setup.md)

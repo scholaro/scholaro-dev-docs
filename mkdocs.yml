@@ -1,7 +1,7 @@
 site_name: Scholaro Developer Docs
 site_description: Developer documentation for Scholaro GPA report integrations
 site_url: https://docs.scholaro.com
-repo_url: https://github.com/alex-scholaro/scholaro-dev-docs
+repo_url: https://github.com/scholaro/scholaro-dev-docs
 repo_name: Scholaro Docs
 edit_uri: edit/main/docs/
 
@@ -47,6 +47,7 @@ nav:
           - Section Home: developer/webhooks.md
           - Overview: developer/webhooks/overview.md
           - Events Reference: developer/webhooks/events-reference.md
+          - Signature Verification: developer/webhooks/signature-verification.md
           - PDF Delivery Events: developer/webhooks/pdf-delivery-events.md
           - TargetX / Salesforce File Delivery: developer/webhooks/targetx-salesforce-file-delivery.md
       - Integrations:

@@ -106,6 +106,7 @@ Go to the **Format Definition** tab and enter the following XML, then click **Sa
 
 ```xml
 <layout b="&#x9;" h="1" type="dip" index="index*.txt" />
+```
 
 After saving, open the **Web Services** menu for the source format and locate the **Standard POST URL**.
 
