@@ -1,30 +1,47 @@
 # Events Reference
 
-This page lists the Scholaro webhook events for GPA reports and digital evaluations, the value each one sends in the `type` field, and example payloads.
+This page lists the Scholaro webhook events, when each one is sent, the value it carries in the `type` field, and every field in its payload.
 
-## Event names and `type` values
+To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a request came from Scholaro, see [Signature Verification](signature-verification.md).
 
-The webhook page in Scholaro lists events by a short name. Data events are sent to your endpoint as JSON, and the `type` field in the request body carries the event code shown below, not the short name.
+## Events
 
-### Data events
+These are the events listed under **Events to Send** on the Scholaro webhook page, in the same order.
 
-| Event in Scholaro | `type` value in the payload |
+- **JSON events** post the event to your endpoint as soon as it happens. The `type` field in the request body names the event.
+- **File events** don't post JSON. Scholaro delivers the report files to your endpoint on a schedule. See [PDF Delivery Events](pdf-delivery-events.md).
+
+| Event in Scholaro | Delivers | `type` value in the payload |
+| --- | --- | --- |
+| `evaluation_report.created` | Files | — |
+| `bulk_upload.started` | JSON | `bulk_upload.started` |
+| `bulk_upload.completed` | JSON | `bulk_upload.completed` |
+| `gpa_report.created (data)` | JSON | `gpa_report.created` |
+| `gpa_report.updated (data)` | JSON | `gpa_report.updated` |
+| `digital_evaluation.created (data)` | JSON | `digital_evaluation.created` |
+| `digital_evaluation.updated (data)` | JSON | `digital_evaluation.updated` |
+| `gpa_report.created (pdf)` | Files | — |
+| `gpa_report.updated (pdf)` | Files | — |
+| `digital_evaluation.created (pdf)` | Files | — |
+| `digital_evaluation.updated (pdf)` | Files | — |
+
+`evaluation_report.created` is for credential evaluations ordered from Scholaro's evaluation service and completed by Scholaro. It is not the same as `digital_evaluation.created`, which is for Digital Evaluations your organization creates in Scholaro.
+
+## When events are sent
+
+| Event in Scholaro | Sent when |
 | --- | --- |
-| `gpa_report.created (data)` | `premium-webhook-event-gpa-report-created-data` |
-| `gpa_report.updated (data)` | `premium-webhook-event-gpa-report-updated-data` |
-| `digital_evaluation.created (data)` | `premium-webhook-event-digital-evaluation-created-data` |
-| `digital_evaluation.updated (data)` | `premium-webhook-event-digital-evaluation-updated-data` |
+| `evaluation_report.created` | A credential evaluation ordered from Scholaro is completed. Its documents are delivered in the next scheduled run, twice a day. |
+| `bulk_upload.started` | A bulk upload is accepted through the GPA Report API or SFTP and starts processing. |
+| `bulk_upload.completed` | Every file in a bulk upload has finished processing. |
+| `gpa_report.created (data)` and `(pdf)` | A GPA report is created, in Scholaro or through the GPA Report API. Sent once per report. |
+| `gpa_report.updated (data)` and `(pdf)` | A different grading scale is applied to the report, or the applicant name or report name is edited in the GPA Reports list. Sent every time. |
+| `digital_evaluation.created (data)` and `(pdf)` | A digital evaluation is created. Sent once per evaluation. |
+| `digital_evaluation.updated (data)` and `(pdf)` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list. Sent every time. |
 
-### PDF events
+Editing grades or courses on a GPA report does not send an `updated` event.
 
-| Event in Scholaro | Event code |
-| --- | --- |
-| `gpa_report.created (pdf)` | `premium-webhook-event-gpa-report-created-pdf` |
-| `gpa_report.updated (pdf)` | `premium-webhook-event-gpa-report-updated-pdf` |
-| `digital_evaluation.created (pdf)` | `premium-webhook-event-digital-evaluation-created-pdf` |
-| `digital_evaluation.updated (pdf)` | `premium-webhook-event-digital-evaluation-updated-pdf` |
-
-PDF events do not post JSON to your endpoint. When one occurs, Scholaro saves a copy of the report and a nightly process delivers the file. See [PDF Delivery Events](pdf-delivery-events.md).
+JSON GPA report and digital evaluation events are only sent for reports created within the last 14 days. Changes to older reports send nothing.
 
 ## Payload structure
 
@@ -33,29 +50,51 @@ Every data event is sent as an HTTP `POST` with a JSON body in this shape:
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-gpa-report-created-data",
+  "type": "gpa_report.created",
   "data": {
     "...": "..."
   }
 }
 ```
 
-| Field | Description |
-| --- | --- |
-| `object` | Always `event` |
-| `type` | The event code from the data events table above |
-| `data` | The GPA report or digital evaluation |
+| Field | Type | Description |
+| --- | --- | --- |
+| `object` | string | Always `event` |
+| `type` | string | The event name, for example `gpa_report.updated` (see the [events table](#events)) |
+| `data` | object | The GPA report, digital evaluation or bulk upload |
 
-Fields with no value are sent as `null`.
+The `data` object has the same fields for `created` and `updated` events. It always holds the report's current values.
 
-## GPA report payload example
+Fields with no value are sent as `null`. Numbers keep their stored precision, so they can include trailing zeros (`120.00`). Parse them as decimal numbers and don't rely on the number of decimal places.
+
+## GPA report
 
 Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | integer | Unique report ID. |
+| `report_name` | string | Report name. |
+| `full_name` | string | The applicant's full name. |
+| `date` | string (date-time) | Date and time the report was created, for example `2026-04-23T15:11:34.09`. No time-zone offset is included. |
+| `dob` | string or null | The applicant's date of birth as a short date. The format follows the language of the Scholaro user who triggered the event (`M/d/yyyy` in English). |
+| `cust_field1` | string or null | Custom field 1. |
+| `cust_field2` | string or null | Custom field 2. |
+| `cust_field3` | string or null | Custom field 3. |
+| `country` | string | Country of study. |
+| `institution` | string or null | Foreign institution name. |
+| `qualification` | string or null | Program name (Bachelor's, Master's, etc.). |
+| `subject` | string or null | Subject or area of study. |
+| `grading_scale` | string | Name of the grading scale applied to the report. |
+| `gpa` | number or null | Cumulative GPA, including any adjustment applied to the report. |
+| `total_credits` | number | Total converted (US) credits, to 2 decimal places. |
+| `total_points` | number | Total grade points: the sum of each course's grade points multiplied by its converted credits. Not rounded. |
+| `courses` | array or null | The report's courses (see [Course](#course)). `null` unless course details are enabled for your webhook. |
 
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-gpa-report-created-data",
+  "type": "gpa_report.created",
   "data": {
     "id": 192904,
     "report_name": "Bachelor of Commerce",
@@ -78,16 +117,61 @@ Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
 }
 ```
 
-`courses` is `null` unless course details are enabled for your webhook.
+### Course
 
-## Digital evaluation payload example
+Each item in `courses`, in transcript order.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | integer | Unique course row ID. |
+| `name` | string or null | Course title as entered from the transcript. |
+| `credits` | string or null | Credits as shown on the transcript. |
+| `credits_converted` | number | Converted (US) credits. |
+| `grade` | string or null | Grade as shown on the transcript. |
+| `us_grade` | string or null | Converted US grade. |
+| `grade_points` | number | Grade points for the converted grade. |
+| `sort_order` | integer | Position of the course on the report. |
+
+```json
+"courses": [
+  {
+    "id": 5530112,
+    "name": "Financial Accounting",
+    "credits": "4",
+    "credits_converted": 4.00,
+    "grade": "A+",
+    "us_grade": "A",
+    "grade_points": 4.000,
+    "sort_order": 1
+  }
+]
+```
+
+## Digital evaluation
 
 Sent for `digital_evaluation.created (data)` and `digital_evaluation.updated (data)`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | integer | Unique evaluation ID. |
+| `evaluation_name` | string | Evaluation name. |
+| `full_name` | string | The applicant's full name. |
+| `date` | string (date-time) | Date and time the evaluation was created. No time-zone offset is included. |
+| `cust_field1` | string or null | Custom field 1. |
+| `cust_field2` | string or null | Custom field 2. |
+| `cust_field3` | string or null | Custom field 3. |
+| `country` | string | Country of study. |
+| `institution` | string or null | Foreign institution name. |
+| `accreditation` | string or null | The institution's accrediting or recognizing body, or `N/A` if none is recorded. |
+| `credential` | string | Credential name, as the native name followed by the English name in brackets, or the English name alone. |
+| `program_length` | number | Program length in years, to 1 decimal place. |
+| `equivalency` | string | US equivalency statement. |
+| `gpa_report` | integer or null | `id` of the GPA report linked to this evaluation, or `null` if there is none. |
 
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-digital-evaluation-created-data",
+  "type": "digital_evaluation.created",
   "data": {
     "id": 113945,
     "evaluation_name": "Equivalency Report",
@@ -107,18 +191,88 @@ Sent for `digital_evaluation.created (data)` and `digital_evaluation.updated (da
 }
 ```
 
-Digital evaluations name the report in `evaluation_name`, not `report_name`. `gpa_report` is the `id` of the linked GPA report, or `null` if the evaluation has none.
+## Bulk upload
 
-## Delivery flow summary for PDF events
+Sent for bulk uploads made through the [GPA Report API](../gpa-report-integration-guide.md) or SFTP. These payloads have no `object` field, and fields with no value are left out rather than sent as `null`. Times are in UTC and may or may not end in `Z`, so parse them as UTC either way.
 
-1. A supported event occurs
-2. Scholaro saves a copy of the report
-3. A nightly Azure function sends the file to the configured destination
-4. The saved file is deleted from storage after processing
+### `bulk_upload.started`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `batch_id` | string (UUID) | Batch ID, as returned when the upload was accepted. |
+| `status` | string | `Processing` |
+| `total_items` | integer | Number of files in the upload. |
+| `source` | string | `API` or `SFTP` |
+| `created_on` | string (date-time) | When the upload was accepted. |
+
+```json
+{
+  "type": "bulk_upload.started",
+  "data": {
+    "batch_id": "5797602d-f05f-495b-8cb9-220c8e2c5df5",
+    "status": "Processing",
+    "total_items": 2,
+    "source": "API",
+    "created_on": "2026-04-23T15:11:34.0912345Z"
+  }
+}
+```
+
+### `bulk_upload.completed`
+
+Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, plus:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `completed_items` | integer | Files that produced a report. |
+| `failed_items` | integer | Files that failed. |
+| `completed_on` | string (date-time) | When processing finished. |
+| `items` | array | One entry per file. |
+| `items[].file_name` | string | Uploaded file name. |
+| `items[].status` | string | `Completed`, `Failed` or `Cancelled` |
+| `items[].report_ids` | array of integers | IDs of the GPA reports created from the file. |
+| `items[].error_message` | string | Why the file failed. Left out when it succeeded. |
+
+```json
+{
+  "type": "bulk_upload.completed",
+  "data": {
+    "batch_id": "5797602d-f05f-495b-8cb9-220c8e2c5df5",
+    "status": "Completed",
+    "total_items": 2,
+    "completed_items": 1,
+    "failed_items": 1,
+    "source": "API",
+    "created_on": "2026-04-23T15:11:34.09",
+    "completed_on": "2026-04-23T15:14:02.5139876Z",
+    "items": [
+      { "file_name": "transcript-1.pdf", "status": "Completed", "report_ids": [192904] },
+      { "file_name": "transcript-2.pdf", "status": "Failed", "report_ids": [], "error_message": "The document could not be read." }
+    ]
+  }
+}
+```
+
+!!! note "GPA reports created through the API"
+    A `gpa_report.created` event for a report created through the GPA Report API has the same fields as above, with three differences: it has no `object` field, fields with no value are left out instead of sent as `null`, and each course can include a `code` with the course code printed on the transcript.
+
+## Changes since the v2 PDF guide
+
+If you built your integration from the original *Scholaro Webhooks* PDF, note these changes:
+
+- `degree_report.created` and `degree_report.updated` are now `digital_evaluation.created` and `digital_evaluation.updated`. In Scholaro, choose the `(data)` version of each event.
+- The digital evaluation payload names the report in `evaluation_name` instead of `report_name`, and adds `institution` and `accreditation`.
+- GPA reports can include `courses`.
+- `gpa_report.updated` is also sent when the applicant name or report name is edited, not only when a different grading scale is selected.
+- Bulk upload, PDF and `evaluation_report.created` events were added.
+
+!!! warning "Earlier `type` values"
+    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [events table](#events).
 
 ## Related docs
 
 - [Webhooks Overview](overview.md)
+- [Signature Verification](signature-verification.md)
 - [PDF Delivery Events](pdf-delivery-events.md)
 - [TargetX / Salesforce File Delivery](targetx-salesforce-file-delivery.md)
 - [Slate Integration Setup](../integrations/slate-integration-setup.md)
