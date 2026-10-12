@@ -1,31 +1,8 @@
 # Events Reference
 
-This page lists the Scholaro webhook events, when each one is sent, the value it carries in the `type` field, and every field in its payload.
+This page lists when each Scholaro webhook event is sent and every field in its payload.
 
 To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a request came from Scholaro, see [Signature Verification](signature-verification.md).
-
-## Events
-
-These are the events listed under **Events to Send** on the Scholaro webhook page, in the same order.
-
-- **JSON events** post the event to your endpoint as soon as it happens. The `type` field in the request body names the event.
-- **File events** don't post JSON. Scholaro delivers the report files to your endpoint on a schedule. See [PDF Delivery Events](pdf-delivery-events.md).
-
-| Event in Scholaro | Delivers | `type` value in the payload |
-| --- | --- | --- |
-| `evaluation_report.created` | Files | — |
-| `bulk_upload.started` | JSON | `bulk_upload.started` |
-| `bulk_upload.completed` | JSON | `bulk_upload.completed` |
-| `gpa_report.created (data)` | JSON | `gpa_report.created` |
-| `gpa_report.updated (data)` | JSON | `gpa_report.updated` |
-| `digital_evaluation.created (data)` | JSON | `digital_evaluation.created` |
-| `digital_evaluation.updated (data)` | JSON | `digital_evaluation.updated` |
-| `gpa_report.created (pdf)` | Files | — |
-| `gpa_report.updated (pdf)` | Files | — |
-| `digital_evaluation.created (pdf)` | Files | — |
-| `digital_evaluation.updated (pdf)` | Files | — |
-
-`evaluation_report.created` is for credential evaluations ordered from Scholaro's evaluation service and completed by Scholaro. It is not the same as `digital_evaluation.created`, which is for Digital Evaluations your organization creates in Scholaro.
 
 ## When events are sent
 
@@ -60,7 +37,7 @@ Every data event is sent as an HTTP `POST` with a JSON body in this shape:
 | Field | Type | Description |
 | --- | --- | --- |
 | `object` | string | Always `event` |
-| `type` | string | The event name, for example `gpa_report.updated` (see the [events table](#events)) |
+| `type` | string | The event name, for example `gpa_report.updated` |
 | `data` | object | The GPA report, digital evaluation or bulk upload |
 
 The `data` object has the same fields for `created` and `updated` events. It always holds the report's current values.
@@ -255,19 +232,6 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 
 !!! note "GPA reports created through the API"
     A `gpa_report.created` event for a report created through the GPA Report API has the same fields as above, with three differences: it has no `object` field, fields with no value are left out instead of sent as `null`, and each course can include a `code` with the course code printed on the transcript.
-
-## Changes since the v2 PDF guide
-
-If you built your integration from the original *Scholaro Webhooks* PDF, note these changes:
-
-- `degree_report.created` and `degree_report.updated` are now `digital_evaluation.created` and `digital_evaluation.updated`. In Scholaro, choose the `(data)` version of each event.
-- The digital evaluation payload names the report in `evaluation_name` instead of `report_name`, and adds `institution` and `accreditation`.
-- GPA reports can include `courses`.
-- `gpa_report.updated` is also sent when the applicant name or report name is edited, not only when a different grading scale is selected.
-- Bulk upload, PDF and `evaluation_report.created` events were added.
-
-!!! warning "Earlier `type` values"
-    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [events table](#events).
 
 ## Related docs
 
