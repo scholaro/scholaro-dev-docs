@@ -256,19 +256,6 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 !!! note "GPA reports created through the API"
     A `gpa_report.created` event for a report created through the GPA Report API has the same fields as above, with three differences: it has no `object` field, fields with no value are left out instead of sent as `null`, and each course can include a `code` with the course code printed on the transcript.
 
-## Changes since the v2 PDF guide
-
-If you built your integration from the original *Scholaro Webhooks* PDF, note these changes:
-
-- `degree_report.created` and `degree_report.updated` are now `digital_evaluation.created` and `digital_evaluation.updated`. In Scholaro, choose the `(data)` version of each event.
-- The digital evaluation payload names the report in `evaluation_name` instead of `report_name`, and adds `institution` and `accreditation`.
-- GPA reports can include `courses`.
-- `gpa_report.updated` is also sent when the applicant name or report name is edited, not only when a different grading scale is selected.
-- Bulk upload, PDF and `evaluation_report.created` events were added.
-
-!!! warning "Earlier `type` values"
-    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [events table](#events).
-
 ## Related docs
 
 - [Webhooks Overview](overview.md)
