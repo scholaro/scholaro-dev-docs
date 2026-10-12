@@ -11,7 +11,7 @@ The following events are supported for PDF delivery:
 - `digital_evaluation.created (pdf)`
 - `digital_evaluation.updated (pdf)`
 
-These are listed separately from the `(data)` events on the Scholaro webhook page. See the [Events Reference](events-reference.md) for the event code behind each one.
+These are listed separately from the `(data)` events on the Scholaro webhook page. See the [Events Reference](events-reference.md) for the data events.
 
 ## How it works
 

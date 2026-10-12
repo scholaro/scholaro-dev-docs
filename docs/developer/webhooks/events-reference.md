@@ -6,27 +6,25 @@ To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a
 
 ## Event names and `type` values
 
-The webhook page in Scholaro lists events by a short name. Data events are sent to your endpoint as JSON, and the `type` field in the request body carries the event code shown below, not the short name.
+Data events are sent to your endpoint as JSON. The `type` field in the request body names the event.
 
 ### Data events
 
 | Event in Scholaro | `type` value in the payload |
 | --- | --- |
-| `gpa_report.created (data)` | `premium-webhook-event-gpa-report-created-data` |
-| `gpa_report.updated (data)` | `premium-webhook-event-gpa-report-updated-data` |
-| `digital_evaluation.created (data)` | `premium-webhook-event-digital-evaluation-created-data` |
-| `digital_evaluation.updated (data)` | `premium-webhook-event-digital-evaluation-updated-data` |
-| `bulk_upload.started` | `premium-webhook-event-batch-started` |
-| `bulk_upload.completed` | `premium-webhook-event-batch-completed` |
+| `gpa_report.created (data)` | `gpa_report.created` |
+| `gpa_report.updated (data)` | `gpa_report.updated` |
+| `digital_evaluation.created (data)` | `digital_evaluation.created` |
+| `digital_evaluation.updated (data)` | `digital_evaluation.updated` |
+| `bulk_upload.started` | `bulk_upload.started` |
+| `bulk_upload.completed` | `bulk_upload.completed` |
 
 ### PDF events
 
-| Event in Scholaro | Event code |
-| --- | --- |
-| `gpa_report.created (pdf)` | `premium-webhook-event-gpa-report-created-pdf` |
-| `gpa_report.updated (pdf)` | `premium-webhook-event-gpa-report-updated-pdf` |
-| `digital_evaluation.created (pdf)` | `premium-webhook-event-digital-evaluation-created-pdf` |
-| `digital_evaluation.updated (pdf)` | `premium-webhook-event-digital-evaluation-updated-pdf` |
+- `gpa_report.created (pdf)`
+- `gpa_report.updated (pdf)`
+- `digital_evaluation.created (pdf)`
+- `digital_evaluation.updated (pdf)`
 
 PDF events do not post JSON to your endpoint. When one occurs, Scholaro saves a copy of the report and a nightly process delivers the file. See [PDF Delivery Events](pdf-delivery-events.md).
 
@@ -52,7 +50,7 @@ Every data event is sent as an HTTP `POST` with a JSON body in this shape:
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-gpa-report-created-data",
+  "type": "gpa_report.created",
   "data": {
     "...": "..."
   }
@@ -62,7 +60,7 @@ Every data event is sent as an HTTP `POST` with a JSON body in this shape:
 | Field | Type | Description |
 | --- | --- | --- |
 | `object` | string | Always `event` |
-| `type` | string | The event code from the data events table above |
+| `type` | string | The event name, for example `gpa_report.updated` (see the data events table above) |
 | `data` | object | The GPA report, digital evaluation or bulk upload |
 
 The `data` object has the same fields for `created` and `updated` events. It always holds the report's current values.
@@ -96,7 +94,7 @@ Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-gpa-report-created-data",
+  "type": "gpa_report.created",
   "data": {
     "id": 192904,
     "report_name": "Bachelor of Commerce",
@@ -173,7 +171,7 @@ Sent for `digital_evaluation.created (data)` and `digital_evaluation.updated (da
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-digital-evaluation-created-data",
+  "type": "digital_evaluation.created",
   "data": {
     "id": 113945,
     "evaluation_name": "Equivalency Report",
@@ -209,7 +207,7 @@ Sent for bulk uploads made through the [GPA Report API](../gpa-report-integratio
 
 ```json
 {
-  "type": "premium-webhook-event-batch-started",
+  "type": "bulk_upload.started",
   "data": {
     "batch_id": "5797602d-f05f-495b-8cb9-220c8e2c5df5",
     "status": "Processing",
@@ -237,7 +235,7 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 
 ```json
 {
-  "type": "premium-webhook-event-batch-completed",
+  "type": "bulk_upload.completed",
   "data": {
     "batch_id": "5797602d-f05f-495b-8cb9-220c8e2c5df5",
     "status": "Completed",
@@ -262,12 +260,14 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 
 If you built your integration from the original *Scholaro Webhooks* PDF, note these changes:
 
-- `degree_report.created` and `degree_report.updated` are now `digital_evaluation.created (data)` and `digital_evaluation.updated (data)`, and `gpa_report.created` and `gpa_report.updated` are now the `(data)` events.
-- `type` carries the event code (for example `premium-webhook-event-gpa-report-created-data`), not the short event name.
+- `degree_report.created` and `degree_report.updated` are now `digital_evaluation.created` and `digital_evaluation.updated`. In Scholaro, choose the `(data)` version of each event.
 - The digital evaluation payload names the report in `evaluation_name` instead of `report_name`, and adds `institution` and `accreditation`.
 - GPA reports can include `courses`.
 - `gpa_report.updated` is also sent when the applicant name or report name is edited, not only when a different grading scale is selected.
 - Bulk upload events and PDF events were added.
+
+!!! warning "Earlier `type` values"
+    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [data events table](#data-events).
 
 ## Related docs
 

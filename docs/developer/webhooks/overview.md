@@ -34,7 +34,7 @@ The body is a JSON event object:
 ```json
 {
   "object": "event",
-  "type": "premium-webhook-event-gpa-report-created-data",
+  "type": "gpa_report.created",
   "data": {
     "...": "..."
   }
