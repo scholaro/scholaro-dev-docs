@@ -25,6 +25,8 @@ These are the events listed under **Events to Send** on the Scholaro webhook pag
 | `digital_evaluation.created (pdf)` | Files | — |
 | `digital_evaluation.updated (pdf)` | Files | — |
 
+`evaluation_report.created` is for credential evaluations ordered from Scholaro's evaluation service and completed by Scholaro. It is not the same as `digital_evaluation.created`, which is for Digital Evaluations your organization creates in Scholaro.
+
 ## When events are sent
 
 | Event in Scholaro | Sent when |
