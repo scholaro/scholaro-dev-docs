@@ -4,8 +4,8 @@ Use Scholaro webhooks to receive data as soon as GPA reports and digital evaluat
 
 Scholaro sends two kinds of events:
 
-- **Data events** post the report's data as JSON to your endpoint as soon as the event happens. They are covered on this page.
-- **PDF events** save a copy of the report, and a nightly process delivers the file. See [PDF Delivery Events](pdf-delivery-events.md).
+- **JSON events** (the `(data)` and `bulk_upload` events) post the event as JSON to your endpoint as soon as it happens. They are covered on this page.
+- **File events** (the `(pdf)` events and `evaluation_report.created`) deliver report files to your endpoint on a schedule. See [PDF Delivery Events](pdf-delivery-events.md).
 
 ## Steps to receive webhooks
 

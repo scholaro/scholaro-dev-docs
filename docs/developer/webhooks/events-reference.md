@@ -4,44 +4,42 @@ This page lists the Scholaro webhook events, when each one is sent, the value it
 
 To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a request came from Scholaro, see [Signature Verification](signature-verification.md).
 
-## Event names and `type` values
+## Events
 
-Data events are sent to your endpoint as JSON. The `type` field in the request body names the event.
+These are the events listed under **Events to Send** on the Scholaro webhook page, in the same order.
 
-### Data events
+- **JSON events** post the event to your endpoint as soon as it happens. The `type` field in the request body names the event.
+- **File events** don't post JSON. Scholaro delivers the report files to your endpoint on a schedule. See [PDF Delivery Events](pdf-delivery-events.md).
 
-| Event in Scholaro | `type` value in the payload |
-| --- | --- |
-| `gpa_report.created (data)` | `gpa_report.created` |
-| `gpa_report.updated (data)` | `gpa_report.updated` |
-| `digital_evaluation.created (data)` | `digital_evaluation.created` |
-| `digital_evaluation.updated (data)` | `digital_evaluation.updated` |
-| `bulk_upload.started` | `bulk_upload.started` |
-| `bulk_upload.completed` | `bulk_upload.completed` |
-
-### PDF events
-
-- `gpa_report.created (pdf)`
-- `gpa_report.updated (pdf)`
-- `digital_evaluation.created (pdf)`
-- `digital_evaluation.updated (pdf)`
-
-PDF events do not post JSON to your endpoint. When one occurs, Scholaro saves a copy of the report and a nightly process delivers the file. See [PDF Delivery Events](pdf-delivery-events.md).
+| Event in Scholaro | Delivers | `type` value in the payload |
+| --- | --- | --- |
+| `evaluation_report.created` | Files | — |
+| `bulk_upload.started` | JSON | `bulk_upload.started` |
+| `bulk_upload.completed` | JSON | `bulk_upload.completed` |
+| `gpa_report.created (data)` | JSON | `gpa_report.created` |
+| `gpa_report.updated (data)` | JSON | `gpa_report.updated` |
+| `digital_evaluation.created (data)` | JSON | `digital_evaluation.created` |
+| `digital_evaluation.updated (data)` | JSON | `digital_evaluation.updated` |
+| `gpa_report.created (pdf)` | Files | — |
+| `gpa_report.updated (pdf)` | Files | — |
+| `digital_evaluation.created (pdf)` | Files | — |
+| `digital_evaluation.updated (pdf)` | Files | — |
 
 ## When events are sent
 
-| Event | Sent when |
+| Event in Scholaro | Sent when |
 | --- | --- |
-| `gpa_report.created` | A GPA report is created, in Scholaro or through the GPA Report API. Sent once per report. |
-| `gpa_report.updated` | A different grading scale is applied to the report, or the applicant name or report name is edited in the GPA Reports list. Sent every time. |
-| `digital_evaluation.created` | A digital evaluation is created. Sent once per evaluation. |
-| `digital_evaluation.updated` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list. Sent every time. |
+| `evaluation_report.created` | A credential evaluation ordered from Scholaro is completed. Its documents are delivered in the next scheduled run, twice a day. |
 | `bulk_upload.started` | A bulk upload is accepted through the GPA Report API or SFTP and starts processing. |
 | `bulk_upload.completed` | Every file in a bulk upload has finished processing. |
+| `gpa_report.created (data)` and `(pdf)` | A GPA report is created, in Scholaro or through the GPA Report API. Sent once per report. |
+| `gpa_report.updated (data)` and `(pdf)` | A different grading scale is applied to the report, or the applicant name or report name is edited in the GPA Reports list. Sent every time. |
+| `digital_evaluation.created (data)` and `(pdf)` | A digital evaluation is created. Sent once per evaluation. |
+| `digital_evaluation.updated (data)` and `(pdf)` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list. Sent every time. |
 
 Editing grades or courses on a GPA report does not send an `updated` event.
 
-GPA report and digital evaluation events are only sent for reports created within the last 14 days. Changes to older reports send nothing.
+JSON GPA report and digital evaluation events are only sent for reports created within the last 14 days. Changes to older reports send nothing.
 
 ## Payload structure
 
@@ -60,7 +58,7 @@ Every data event is sent as an HTTP `POST` with a JSON body in this shape:
 | Field | Type | Description |
 | --- | --- | --- |
 | `object` | string | Always `event` |
-| `type` | string | The event name, for example `gpa_report.updated` (see the data events table above) |
+| `type` | string | The event name, for example `gpa_report.updated` (see the [events table](#events)) |
 | `data` | object | The GPA report, digital evaluation or bulk upload |
 
 The `data` object has the same fields for `created` and `updated` events. It always holds the report's current values.
@@ -264,10 +262,10 @@ If you built your integration from the original *Scholaro Webhooks* PDF, note th
 - The digital evaluation payload names the report in `evaluation_name` instead of `report_name`, and adds `institution` and `accreditation`.
 - GPA reports can include `courses`.
 - `gpa_report.updated` is also sent when the applicant name or report name is edited, not only when a different grading scale is selected.
-- Bulk upload events and PDF events were added.
+- Bulk upload, PDF and `evaluation_report.created` events were added.
 
 !!! warning "Earlier `type` values"
-    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [data events table](#data-events).
+    For a period, `type` carried an internal event code instead of the event name, for example `premium-webhook-event-gpa-report-created-data` instead of `gpa_report.created`. If your integration matches on those codes, update it to the names in the [events table](#events).
 
 ## Related docs
 
