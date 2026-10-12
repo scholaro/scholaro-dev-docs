@@ -89,13 +89,13 @@ The response includes report metadata, GPA totals, and the `grades` array for th
     "total_points": 0.0,
     "gpa": 0.0,
     "grades": [
-  {
-    "class": "string",
-    "grade_points": 0.0,
-    "credits": 0.0,
-    "grade": "string"
-  }
-]
+      {
+        "class": "string",
+        "grade_points": 0.0,
+        "credits": 0.0,
+        "grade": "string"
+      }
+    ]
   }
 }
 ```
