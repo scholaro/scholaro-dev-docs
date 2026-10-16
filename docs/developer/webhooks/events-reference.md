@@ -67,6 +67,8 @@ Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
 | `total_credits` | number | Total converted (US) credits, to 2 decimal places. |
 | `total_points` | number | Total grade points: the sum of each course's grade points multiplied by its converted credits. Not rounded. |
 | `courses` | array or null | The report's courses (see [Course](#course)). `null` unless course details are enabled for your webhook. |
+| `integrity_score` | integer or null | Document Integrity Check score, 0–100. Higher means more risk. `null` if no check result is available (see [Document integrity fields](#document-integrity-fields)). |
+| `integrity_risk` | string or null | Risk band for `integrity_score`: `low`, `normal`, `elevated` or `high`. `null` whenever `integrity_score` is `null`. |
 
 ```json
 {
@@ -89,7 +91,9 @@ Sent for `gpa_report.created (data)` and `gpa_report.updated (data)`.
     "gpa": 3.77,
     "total_credits": 120.0,
     "total_points": 452.4,
-    "courses": null
+    "courses": null,
+    "integrity_score": 12,
+    "integrity_risk": "normal"
   }
 }
 ```
@@ -144,6 +148,8 @@ Sent for `digital_evaluation.created (data)` and `digital_evaluation.updated (da
 | `program_length` | number | Program length in years, to 1 decimal place. |
 | `equivalency` | string | US equivalency statement. |
 | `gpa_report` | integer or null | `id` of the GPA report linked to this evaluation, or `null` if there is none. |
+| `integrity_score` | integer or null | Document Integrity Check score, 0–100. Higher means more risk. `null` if no check result is available (see [Document integrity fields](#document-integrity-fields)). |
+| `integrity_risk` | string or null | Risk band for `integrity_score`: `low`, `normal`, `elevated` or `high`. `null` whenever `integrity_score` is `null`. |
 
 ```json
 {
@@ -163,10 +169,32 @@ Sent for `digital_evaluation.created (data)` and `digital_evaluation.updated (da
     "credential": "Bachelor of Commerce",
     "program_length": 3.0,
     "equivalency": "Three years of undergraduate coursework, comparable to a Bachelor's degree",
-    "gpa_report": 192904
+    "gpa_report": 192904,
+    "integrity_score": null,
+    "integrity_risk": null
   }
 }
 ```
+
+### Document integrity fields
+
+GPA report and digital evaluation payloads include `integrity_score` and `integrity_risk`. They come from the Document Integrity Check that ran on the transcript the report was created from. Scholaro reuses that result; it doesn't run a new check when the event is sent.
+
+- For a GPA report, the score is from the document most recently imported into the report.
+- For a digital evaluation, the score is from the document the evaluation was created from.
+
+| `integrity_score` | `integrity_risk` |
+| --- | --- |
+| 0–5 | `low` |
+| 6–65 | `normal` |
+| 66–75 | `elevated` |
+| 76–100 | `high` |
+
+Both fields are `null` when there is no result: the report was entered by hand or created through the GPA Report API, the check wasn't selected for the import, or the check couldn't be completed. **Treat `null` as "not checked", not as low risk.**
+
+The score indicates risk; it is not a verdict on whether a document is authentic. Use it to decide which documents need a closer review.
+
+The score is only in the JSON payload. It isn't printed on the PDFs delivered by the PDF events.
 
 ## Bulk upload
 
@@ -231,7 +259,7 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 ```
 
 !!! note "GPA reports created through the API"
-    A `gpa_report.created` event for a report created through the GPA Report API has the same fields as above, with three differences: it has no `object` field, fields with no value are left out instead of sent as `null`, and each course can include a `code` with the course code printed on the transcript.
+    A `gpa_report.created` event for a report created through the GPA Report API has the same fields as above, with three differences: it has no `object` field, course fields with no value (`grade_points`, `credits_converted`) are left out instead of sent as `null`, and each course can include a `code` with the course code printed on the transcript. `integrity_score` and `integrity_risk` are always `null` for these reports, because reports created through the API don't run the Document Integrity Check.
 
 ## Related docs
 
