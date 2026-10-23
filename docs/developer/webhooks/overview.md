@@ -53,9 +53,30 @@ The body is a JSON event object:
 !!! tip
     Return `200` as soon as you have received the request, and do any slow processing afterwards. Log each event and make your handler safe to run twice for the same report, because resends and updated events can deliver the same report more than once.
 
+## Reviewing deliveries
+
+The [Developer dashboard](https://www.scholaro.com/app/developer/webhooks) lists the JSON events sent to your endpoints in the last 14 days, newest first. It is available to admins of your organization.
+
+| Column | Shows |
+| --- | --- |
+| **Report ID** | The GPA report or digital evaluation the event was about. `N/A` for `bulk_upload` events. |
+| **Event** | The event that was sent. |
+| **Endpoint** | The endpoint it was sent to. |
+| **Created On** | When it was sent. |
+| **Response** | The status code your endpoint returned, for example `200 OK` or `500 ERR`. A timeout is shown as `408`. |
+
+Select a delivery to see the request Scholaro sent and the response it got.
+
+- **Resend Reports** (or **Re-send** on a single delivery) sends the selected report events again. The event must still be ticked under **Events to Send**. `bulk_upload` events can't be re-sent.
+- **Find Missing Reports** sends `created` events, data and PDF, for reports created in the last 14 days. It skips the data event for any report that already has a delivery in the list, even a failed one, so use **Resend Reports** for failed deliveries.
+- PDF deliveries (the `(pdf)` events) aren't listed. See [PDF Delivery Events](pdf-delivery-events.md).
+
+For bulk imports, see [SFTP processing and webhook delivery](../bulk-import.md#sftp-processing-and-webhook-delivery).
+
 ## Related docs
 
 - [Events Reference](events-reference.md)
+- [Bulk Import: Behavior and Troubleshooting](../bulk-import.md)
 - [Signature Verification](signature-verification.md)
 - [PDF Delivery Events](pdf-delivery-events.md)
 - [TargetX / Salesforce File Delivery](targetx-salesforce-file-delivery.md)
