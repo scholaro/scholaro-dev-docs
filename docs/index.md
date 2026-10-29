@@ -19,7 +19,7 @@
 
     ---
 
-    Covers Single API, Bulk API, batch status checks, SFTP uploads, and example request formats.
+    Covers Single API, Bulk API, batch status checks, SFTP uploads, and example request formats. For what happens after a bulk upload and how to troubleshoot it, see [Bulk Import](developer/bulk-import.md).
 
 -   **Webhooks**
 

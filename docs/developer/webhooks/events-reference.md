@@ -200,6 +200,8 @@ The score is only in the JSON payload. It isn't printed on the PDFs delivered by
 
 Sent for bulk uploads made through the [GPA Report API](../gpa-report-integration-guide.md) or SFTP. These payloads have no `object` field, and fields with no value are left out rather than sent as `null`. Times are in UTC and may or may not end in `Z`, so parse them as UTC either way.
 
+For the order in which a bulk import sends its events, see [Bulk Import: Behavior and Troubleshooting](../bulk-import.md#webhook-events-sent-during-a-bulk-import).
+
 ### `bulk_upload.started`
 
 | Field | Type | Description |
@@ -237,6 +239,10 @@ Has the same fields as `bulk_upload.started`, with `status` set to `Completed`, 
 | `items[].status` | string | `Completed`, `Failed` or `Cancelled` |
 | `items[].report_ids` | array of integers | IDs of the GPA reports created from the file. |
 | `items[].error_message` | string | Why the file failed. Left out when it succeeded. |
+
+`status` is `Completed` once every file has finished, even if some or all of them failed. Check `failed_items` and each item's `status`.
+
+If an SFTP upload is rejected before processing starts (for example, because a file named in `manifest.csv` is missing), `bulk_upload.completed` is sent with `status` set to `Failed`, and no `bulk_upload.started` is sent before it. Every item is `Failed`, and its `error_message` says why the upload was rejected. If `manifest.csv` couldn't be read, there is a single item with `file_name` set to `manifest.csv`. See [Bulk Import troubleshooting](../bulk-import.md#the-batch-was-rejected) for each message.
 
 ```json
 {

@@ -56,6 +56,8 @@ Use this when you:
 - want to upload a ZIP plus manifest file
 - can poll for completion or process results later
 
+See [Bulk Import: Behavior and Troubleshooting](bulk-import.md) for what happens after an upload.
+
 ### SFTP
 
 Use this when you:
@@ -83,5 +85,6 @@ Use this when you:
 ## Related pages
 
 - [GPA Report Integration Guide](gpa-report-integration-guide.md)
+- [Bulk Import: Behavior and Troubleshooting](bulk-import.md)
 - [Webhooks](webhooks.md)
 - [Slate Integration Setup](integrations/slate-integration-setup.md)

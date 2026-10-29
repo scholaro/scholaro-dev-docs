@@ -43,6 +43,7 @@ nav:
   - Developer Docs:
       - Getting Started: developer/getting-started.md
       - GPA Report Integration Guide: developer/gpa-report-integration-guide.md
+      - "Bulk Import: Behavior and Troubleshooting": developer/bulk-import.md
       - Webhooks:
           - Section Home: developer/webhooks.md
           - Overview: developer/webhooks/overview.md
