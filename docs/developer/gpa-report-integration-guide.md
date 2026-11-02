@@ -284,7 +284,7 @@ Scholaro sets up your organization for one of two upload formats: a single ZIP f
     Requirements:
 
     - Upload every transcript file referenced in the manifest. If a file hasn't arrived, Scholaro waits up to 15 minutes for it after `manifest.csv` is uploaded, then rejects the upload.
-    - Upload the transcript files again for each new batch. Files that were already in the folder before your last batch don't count.
+    - If a file from an earlier batch isn't uploaded again, Scholaro waits up to 15 minutes, then uses the copy already in the folder.
     - Don't use subfolders. List each file in `file_name` by its name only.
     - Transcript files must be PDF, JPG, JPEG, or PNG
     - Manifest format matches the [Bulk API manifest](#manifestcsv-format)
