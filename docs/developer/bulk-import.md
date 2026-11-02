@@ -86,7 +86,6 @@ A rejected SFTP upload is recorded as a `Failed` batch, and each item's `error_m
 | `manifest.csv line {n}: a quoted field is never closed.` | A value on that line opens a double quote without closing it. See [CSV formatting rules](gpa-report-integration-guide.md#csv-formatting-rules). |
 | `{file} is not in {zip}.` | Add the file to the ZIP, or correct its `file_name` in the manifest. |
 | `{file} was not found in the container.` | Individual-file uploads: the file wasn't uploaded within 15 minutes of `manifest.csv`. Upload the file, then upload `manifest.csv` again. |
-| `{file} is older than the previous batch. Upload it again with this manifest.` | The file was already in the folder before your last batch. Upload it again, then upload `manifest.csv`. |
 | `{file} is not a plain file name at the top of the SFTP folder.` | Put the file in the top-level folder and list it in `file_name` without a folder path. |
 | `Batch not started: {n} reports would exceed the subscription limit ({used} of {max} used).` | Upload fewer files, or contact Scholaro about your subscription. |
 
