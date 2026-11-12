@@ -46,7 +46,9 @@ If you have webhooks set up, a bulk import sends these events, in this order:
 For every field in these payloads, see the [Events Reference](webhooks/events-reference.md#bulk-upload).
 
 !!! note "PDF delivery for bulk-imported reports"
-    A bulk import doesn't send `(pdf)` events by itself. If you deliver report PDFs to Slate or Salesforce, the PDFs of bulk-imported reports are sent when someone opens the report in Scholaro Premium, or when an admin uses **Find Missing Reports** or **Resend Reports** in the Developer dashboard. Run **Find Missing Reports** after a batch completes to deliver all of its PDFs. See [PDF Delivery Events](webhooks/pdf-delivery-events.md).
+    If `gpa_report.created (pdf)` is ticked under **Events to Send**, Scholaro generates a PDF for each bulk-imported report shortly after the report is created. The PDFs are not sent at that moment: they go to Slate or Salesforce in the next scheduled run, twice a day, so allow up to 12 hours after the batch completes. See [PDF Delivery Events](webhooks/pdf-delivery-events.md#how-it-works).
+
+    If the event wasn't ticked when the batch ran, tick it and then use **Find Missing Reports** in the Developer dashboard to generate the PDFs for reports created in the last 14 days.
 
 ## SFTP processing and webhook delivery
 
@@ -120,7 +122,11 @@ zip -r bulk-upload.zip . -x ".*" -x "__MACOSX/*"
 
 ### PDFs didn't reach Slate or Salesforce
 
-A bulk import doesn't send PDFs by itself. Use **Find Missing Reports** in the Developer dashboard after the batch completes. See [PDF delivery for bulk-imported reports](#webhook-events-sent-during-a-bulk-import).
+- PDFs are sent in a scheduled run twice a day, not when the batch completes. Allow up to 12 hours.
+- Check that `gpa_report.created (pdf)` is ticked under **Events to Send**, and that the endpoint it's assigned to is enabled.
+- If the event wasn't ticked when the batch ran, tick it and then use **Find Missing Reports** in the Developer dashboard.
+
+See [PDF delivery for bulk-imported reports](#webhook-events-sent-during-a-bulk-import).
 
 ### The batch seems stuck
 

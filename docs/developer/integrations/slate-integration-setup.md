@@ -144,6 +144,9 @@ Once saved, Scholaro will be able to send ZIP files into your Slate instance.
 
 After Scholaro sends the first ZIP file, return to the **Scholar DIP** source format in Slate.
 
+!!! note "When the first ZIP file arrives"
+    Saving the webhook doesn't send a file. Scholaro sends ZIP files twice a day, about 12 hours apart, and only when there is something to send. Expect the first ZIP file at the next scheduled run after a report or evaluation is created, which can be up to 12 hours later. See [PDF Delivery Events](../webhooks/pdf-delivery-events.md#how-it-works).
+
 You should see a successful web service post from `scholaro`. Once the file is ready for mapping, Slate will show imported rows and the **Remap** option will become available.
 
 ![Imported rows and Remap](../images/slate/imported-rows-remap.png)
