@@ -16,6 +16,8 @@ To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a
 | `digital_evaluation.created (data)` and `(pdf)` | A digital evaluation is created. Sent once per evaluation. |
 | `digital_evaluation.updated (data)` and `(pdf)` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list. Sent every time. |
 
+The `(pdf)` events are not sent at that moment. The PDF is generated when the event occurs and delivered in the next scheduled run, twice a day. See [PDF Delivery Events](pdf-delivery-events.md#how-it-works).
+
 Editing grades or courses on a GPA report does not send an `updated` event.
 
 JSON GPA report and digital evaluation events are only sent for reports created within the last 14 days. Changes to older reports send nothing.

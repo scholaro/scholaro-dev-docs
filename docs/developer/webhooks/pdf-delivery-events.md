@@ -17,9 +17,19 @@ These are listed separately from the `(data)` events on the Scholaro webhook pag
 
 ## How it works
 
-If PDF delivery is enabled, Scholaro saves a copy of the report whenever one of the supported events occurs.
+PDF delivery happens in two steps, so a PDF does not reach your system at the moment the report is created.
 
-A nightly Azure function then sends the saved report to the destination system and deletes the report from the storage container after processing.
+1. **The PDF is generated.** When one of the supported events occurs, Scholaro creates the PDF and holds it for delivery. Nothing is sent to your system yet.
+2. **The PDF is sent.** Twice a day, about 12 hours apart (currently 04:00 and 16:00 UTC), Scholaro sends every PDF that is waiting for your organization to your endpoint. For Slate, they are packaged into one ZIP file per run.
+
+A report created just after a run waits for the next one, so allow up to 12 hours. The matching `(data)` event is still sent as soon as the report is created or updated, so the report data usually arrives hours before its PDF.
+
+## What to expect
+
+- **Each report is sent once per run.** If a report has more than one PDF waiting, for example because it was created and then updated before the run, only the newest PDF is sent.
+- **A rejected delivery is tried again.** If your endpoint doesn't accept a delivery, Scholaro tries again on each run for up to 7 days after the PDF was generated. Scholaro removes its copy of the PDF once your endpoint has accepted it.
+- **PDF deliveries aren't in the delivery list.** The delivery list in the Developer dashboard shows `(data)` events only.
+- **Find Missing Reports doesn't send PDFs early.** It generates the PDF for any report from the last 14 days that doesn't have one yet. Those PDFs are still sent in the next scheduled run.
 
 ## Slate delivery behavior
 
