@@ -128,11 +128,21 @@ Log in to the Scholaro webhook page:
 Enter the following values:
 
 - **URL**: Paste the **Standard POST URL** from the Slate source format
-- **Events to send**: `evaluation_report.created`
+- **Events to send**: Tick an event for each kind of file you want in Slate (see the table below)
 - **Authentication**: Use basic authentication
   - **Username**: `scholaro`
   - **Password**: The service account password you created in Slate
 - **Enabled**: Checked
+
+| To receive in Slate | Tick |
+| --- | --- |
+| Credential evaluations ordered from Scholaro | `evaluation_report.created` |
+| GPA report PDFs | `gpa_report.created (pdf)`, and `gpa_report.updated (pdf)` if you also want a new PDF after a report changes |
+| Digital evaluation PDFs | `digital_evaluation.created (pdf)`, and `digital_evaluation.updated (pdf)` if you also want a new PDF after an evaluation changes |
+
+The `(data)` events send JSON, not files, so the DIP source format on this endpoint can't import them. If you also want the report data, add a second endpoint for the `(data)` events (see [Webhooks Overview](../webhooks/overview.md#delivery-behavior)).
+
+A PDF is only generated if its `(pdf)` event is already ticked when the report is created or updated. See [PDF Delivery Events](../webhooks/pdf-delivery-events.md#what-you-need-to-set-up).
 
 Example webhook configuration:
 
@@ -140,12 +150,29 @@ Example webhook configuration:
 
 Once saved, Scholaro will be able to send ZIP files into your Slate instance.
 
+### Delivery schedule
+
+Scholaro doesn't send a file to Slate at the moment a report is created. Files are sent in two scheduled runs a day:
+
+| Run | UTC | US Central, standard time | US Central, daylight saving time |
+| --- | --- | --- | --- |
+| Morning | 16:00 | 10:00 AM | 11:00 AM |
+| Evening | 04:00 | 10:00 PM | 11:00 PM |
+
+- Each run sends one ZIP file with everything that is waiting for your organization. If nothing is waiting, no file is sent.
+- A report created just after a run waits for the next one, so a PDF can reach Slate up to 12 hours after its report was created. A run with many PDFs can take several minutes.
+- Slate then imports the file on its own schedule, so allow extra time before the material appears on a record.
+- If Slate doesn't accept a ZIP file, Scholaro sends its PDFs again on each run for up to 7 days.
+- If a report changes more than once between runs, only its latest PDF is sent.
+
+For bulk imports through SFTP or the Bulk API, see [PDF delivery for bulk-imported reports](../bulk-import.md#webhook-events-sent-during-a-bulk-import).
+
 ## 4. Remap the source format after the first file is received
 
 After Scholaro sends the first ZIP file, return to the **Scholar DIP** source format in Slate.
 
 !!! note "When the first ZIP file arrives"
-    Saving the webhook doesn't send a file. Scholaro sends ZIP files twice a day, about 12 hours apart, and only when there is something to send. Expect the first ZIP file at the next scheduled run after a report or evaluation is created, which can be up to 12 hours later. See [PDF Delivery Events](../webhooks/pdf-delivery-events.md#how-it-works).
+    Saving the webhook doesn't send a file. Expect the first ZIP file at the next scheduled run after a report or evaluation is created, which can be up to 12 hours later. See [Delivery schedule](#delivery-schedule).
 
 You should see a successful web service post from `scholaro`. Once the file is ready for mapping, Slate will show imported rows and the **Remap** option will become available.
 
@@ -187,6 +214,15 @@ Go to the **Prompt Value Mappings** screen and select the `type` source field.
 
 Map the incoming document types to the correct **Material Types** in your Slate instance, then save.
 
+For GPA report and digital evaluation PDFs, the `type` value is one of:
+
+- `GPA Report (created)`
+- `GPA Report (updated)`
+- `Digital Evaluation (created)`
+- `Digital Evaluation (updated)`
+
+Map every value for the events you ticked. If you tick another event later, return to this screen and map its value too.
+
 ![Prompt material type mapping](../images/slate/prompt-material-type-mapping.png)
 
 When finished, return to the source format.
@@ -217,3 +253,10 @@ To complete the integration successfully:
 - Set **Remap Active** to **Active**
 
 Once these steps are complete, Scholaro can send supported files directly into your Slate environment.
+
+## Related docs
+
+- [PDF Delivery Events](../webhooks/pdf-delivery-events.md)
+- [Events Reference](../webhooks/events-reference.md)
+- [Webhooks Overview](../webhooks/overview.md)
+- [Bulk Import: Behavior and Troubleshooting](../bulk-import.md)

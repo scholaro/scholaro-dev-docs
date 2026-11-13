@@ -65,9 +65,10 @@ For an applicant named `Jon Franklin James Doe`:
 
 ## File delivery behavior
 
-When the nightly Scholaro function runs, the file is uploaded to the matching contact in Salesforce.
+Files are not uploaded at the moment a report is created. Scholaro generates the PDF when a ticked `(pdf)` event occurs, then uploads it to the matching contact in Salesforce in the next scheduled run. Runs are twice a day, at 04:00 and 16:00 UTC, so allow up to 12 hours. See [PDF Delivery Events](pdf-delivery-events.md) for which events to tick and what to expect.
 
 ## Related docs
 
 - [Webhooks Overview](overview.md)
 - [PDF Delivery Events](pdf-delivery-events.md)
+- [Bulk Import: Behavior and Troubleshooting](../bulk-import.md)

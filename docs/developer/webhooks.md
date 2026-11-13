@@ -20,7 +20,7 @@ Explains how to check the `X-Scholaro-Signature` header, with code examples.
 
 ### PDF Delivery Events
 
-Explains which GPA report and digital evaluation events support PDF delivery and how nightly processing works.
+Explains which GPA report and digital evaluation events support PDF delivery what to set up to receive them, and how the twice-daily delivery runs work.
 
 ### TargetX / Salesforce File Delivery
 
