@@ -46,9 +46,9 @@ If you have webhooks set up, a bulk import sends these events, in this order:
 For every field in these payloads, see the [Events Reference](webhooks/events-reference.md#bulk-upload).
 
 !!! note "PDF delivery for bulk-imported reports"
-    If `gpa_report.created (pdf)` is ticked under **Events to Send**, Scholaro generates a PDF for each bulk-imported report shortly after the report is created. The PDFs are not sent at that moment: they go to Slate or Salesforce in the next scheduled run, twice a day, so allow up to 12 hours after the batch completes. See [PDF Delivery Events](webhooks/pdf-delivery-events.md#how-it-works).
+    If `gpa_report.created (pdf)` is ticked under **Events to Send**, Scholaro automatically generates a PDF for each report created by a bulk import, whether the batch came through SFTP or the Bulk API. You don't need to open the reports or do anything else. The PDFs are not sent at that moment: they go to Slate or Salesforce in the next scheduled run, twice a day (04:00 and 16:00 UTC), so allow up to 12 hours after the batch completes. See [PDF Delivery Events](webhooks/pdf-delivery-events.md#how-it-works).
 
-    If the event wasn't ticked when the batch ran, tick it and then use **Find Missing Reports** in the Developer dashboard to generate the PDFs for reports created in the last 14 days.
+    **When to use Find Missing Reports.** Use it only if `gpa_report.created (pdf)` wasn't ticked when the batch ran: tick the event, then click **Find Missing Reports** in the Developer dashboard. It generates the PDFs for reports created in the last 14 days that don't have one, and they are sent in the next scheduled run. You don't need it for a batch that ran with the event ticked, and it doesn't make PDFs arrive sooner.
 
 ## SFTP processing and webhook delivery
 
