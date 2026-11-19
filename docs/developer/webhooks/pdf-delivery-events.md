@@ -21,11 +21,10 @@ These are listed separately from the `(data)` events on the Scholaro webhook pag
 | --- | --- | --- |
 | `gpa_report.created (pdf)` | A GPA report is created in Scholaro, or by a bulk import through SFTP or the Bulk API | Once per report |
 | `gpa_report.updated (pdf)` | A different grading scale is applied to the report, or the applicant name or report name is edited in the GPA Reports list | Every time |
-| `digital_evaluation.created (pdf)` | A digital evaluation is created | When it is created, and again each time the evaluation is opened in Scholaro Premium (see below) |
+| `digital_evaluation.created (pdf)` | A digital evaluation is created | Once per evaluation |
 | `digital_evaluation.updated (pdf)` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list | Every time |
 
-- **Tick only the created event** to receive each GPA report once, as it was when it was created. Later changes are not sent.
-- **A digital evaluation's created PDF can be delivered more than once.** Unlike a GPA report, an evaluation gets a new created PDF each time it is opened in Scholaro Premium, and each time **Find Missing Reports** is used. PDFs waiting for the same run are sent as one file. A PDF generated after an earlier one was accepted is sent again in the next run, with the same file name, so your system should treat it as a replacement.
+- **Tick only the created event** to receive each report once, as it was when it was created. Later changes are not sent.
 - **Tick the updated event as well** to receive a new PDF after each change. The new PDF has the same file name as the earlier one, so your system should treat it as a replacement.
 - Editing grades or courses on a GPA report does not generate a new PDF.
 - A report created with the single-report [GPA Report API](../gpa-report-integration-guide.md) doesn't get a PDF at the moment it is created. Its created PDF is generated when the report is first opened in Scholaro Premium, or when you use **Find Missing Reports**.
@@ -55,7 +54,7 @@ A report created just after a run waits for the next one, so allow up to 12 hour
 - **A rejected delivery is tried again.** If your endpoint doesn't accept a delivery, Scholaro tries again on each run for up to 7 days after the PDF was generated. Scholaro removes its copy of the PDF once your endpoint has accepted it.
 - **PDF deliveries are in the delivery list.** The delivery list in the Developer dashboard shows one row for each PDF in each run, including runs your endpoint rejected. On these rows **Report ID** is Scholaro's applicant number, not the report ID, and the request is the name of the file that was sent: the ZIP file for Slate, or the PDF for TargetX / Salesforce. See [Reviewing deliveries](overview.md#reviewing-deliveries).
 - **A PDF delivery can't be re-sent from the list.** **Resend Reports** only sends `(data)` events again. A rejected PDF delivery is tried again automatically, as described above.
-- **Find Missing Reports doesn't send PDFs early.** For GPA reports from the last 14 days, it generates the created PDF only for reports that don't have one yet. For digital evaluations from the last 14 days, it generates a new created PDF for every evaluation each time it is used. Those PDFs are still sent in the next scheduled run.
+- **Find Missing Reports doesn't send PDFs early.** It generates the PDF for any report from the last 14 days that doesn't have one yet. Those PDFs are still sent in the next scheduled run.
 
 ## Slate delivery behavior
 

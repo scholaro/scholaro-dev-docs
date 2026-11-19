@@ -45,8 +45,7 @@ The body is a JSON event object:
 
 ## Delivery behavior
 
-- **Created events are sent once per report.** **Updated events are sent every time** the report changes in a way that triggers them. The created PDF of a digital evaluation is an exception and can be sent more than once (see [PDF Delivery Events](pdf-delivery-events.md#created-and-updated-events)).
-- **Only recent reports are sent.** GPA report and digital evaluation events are only sent for reports created within the last 14 days.
+- **Created events are sent once per report.** **Updated events are sent every time** the report changes in a way that triggers them.- **Only recent reports are sent.** GPA report and digital evaluation events are only sent for reports created within the last 14 days.
 - **Failed JSON deliveries are not retried automatically.** The Developer dashboard lists recent deliveries with your endpoint's response. Use **Resend Reports** to send selected reports again, or **Find Missing Reports** to send created events for recent reports that don't have one yet.
 - **Failed PDF deliveries are retried automatically.** A PDF your endpoint doesn't accept is sent again on each scheduled run for up to 7 days. See [PDF Delivery Events](pdf-delivery-events.md#what-to-expect).
 - **You can use a second endpoint.** You can add a second endpoint and choose which endpoint receives each event, for example report data to one system and PDFs to another.
