@@ -117,7 +117,9 @@ zip -r bulk-upload.zip . -x ".*" -x "__MACOSX/*"
 ### Reports were created, but no webhook arrived
 
 - Check that `gpa_report.created`, `bulk_upload.started` and `bulk_upload.completed` are ticked under **Events to Send**, and that the endpoint they're assigned to is enabled.
-- Check the delivery list in the Developer dashboard for the response your endpoint returned. Deliveries that failed are not retried automatically. Select them and use **Resend Reports**.
+- Check the delivery list in the Developer dashboard for the response your endpoint returned. Deliveries that failed are not retried automatically.
+- For a failed `gpa_report.created` delivery, select it and use **Resend Reports**.
+- `bulk_upload.started` and `bulk_upload.completed` can't be re-sent. Use the [Batch Status](gpa-report-integration-guide.md#batch-status) endpoint to get the same batch and per-file results.
 - Webhook events are only sent for reports created within the last 14 days.
 
 ### PDFs didn't reach Slate or Salesforce

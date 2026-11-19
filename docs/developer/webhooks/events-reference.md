@@ -18,6 +18,8 @@ To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a
 
 The `(pdf)` events are not sent at that moment. The PDF is generated when the event occurs and delivered in the next scheduled run, twice a day. See [PDF Delivery Events](pdf-delivery-events.md#how-it-works).
 
+A report created with the single-report [GPA Report API](../gpa-report-integration-guide.md) is the exception: only its `(data)` event is sent when it is created. Its PDF is generated when the report is first opened in Scholaro Premium, or when you use **Find Missing Reports**. Reports created by a bulk import get their PDF automatically. See [Created and updated events](pdf-delivery-events.md#created-and-updated-events).
+
 Editing grades or courses on a GPA report does not send an `updated` event.
 
 JSON GPA report and digital evaluation events are only sent for reports created within the last 14 days. Changes to older reports send nothing.
