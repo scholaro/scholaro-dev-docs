@@ -45,9 +45,10 @@ The body is a JSON event object:
 
 ## Delivery behavior
 
-- **Created events are sent once per report.** **Updated events are sent every time** the report changes in a way that triggers them.
+- **Created events are sent once per report.** **Updated events are sent every time** the report changes in a way that triggers them. The created PDF of a digital evaluation is an exception and can be sent more than once (see [PDF Delivery Events](pdf-delivery-events.md#created-and-updated-events)).
 - **Only recent reports are sent.** GPA report and digital evaluation events are only sent for reports created within the last 14 days.
-- **Failed deliveries are not retried automatically.** The Developer dashboard lists recent deliveries with your endpoint's response. Use **Resend Reports** to send selected reports again, or **Find Missing Reports** to send created events for recent reports that don't have one yet.
+- **Failed JSON deliveries are not retried automatically.** The Developer dashboard lists recent deliveries with your endpoint's response. Use **Resend Reports** to send selected reports again, or **Find Missing Reports** to send created events for recent reports that don't have one yet.
+- **Failed PDF deliveries are retried automatically.** A PDF your endpoint doesn't accept is sent again on each scheduled run for up to 7 days. See [PDF Delivery Events](pdf-delivery-events.md#what-to-expect).
 - **You can use a second endpoint.** You can add a second endpoint and choose which endpoint receives each event, for example report data to one system and PDFs to another.
 
 !!! tip
@@ -55,11 +56,11 @@ The body is a JSON event object:
 
 ## Reviewing deliveries
 
-The [Developer dashboard](https://www.scholaro.com/app/developer/webhooks) lists the JSON events sent to your endpoints in the last 14 days, newest first. It is available to admins of your organization.
+The [Developer dashboard](https://www.scholaro.com/app/developer/webhooks) lists the deliveries made to your endpoints in the last 14 days, JSON events and PDFs, newest first. It is available to admins of your organization.
 
 | Column | Shows |
 | --- | --- |
-| **Report ID** | The GPA report or digital evaluation the event was about. `N/A` for `bulk_upload` events. |
+| **Report ID** | The GPA report or digital evaluation the event was about. `N/A` for `bulk_upload` events. For a PDF delivery, Scholaro's applicant number, not the report ID. |
 | **Event** | The event that was sent. |
 | **Endpoint** | The endpoint it was sent to. |
 | **Created On** | When it was sent. |
@@ -67,9 +68,9 @@ The [Developer dashboard](https://www.scholaro.com/app/developer/webhooks) lists
 
 Select a delivery to see the request Scholaro sent and the response it got.
 
-- **Resend Reports** (or **Re-send** on a single delivery) sends the selected report events again. The event must still be ticked under **Events to Send**. `bulk_upload` events can't be re-sent.
-- **Find Missing Reports** sends `created` events, data and PDF, for reports created in the last 14 days. It skips the data event for any report that already has a delivery in the list, even a failed one, so use **Resend Reports** for failed deliveries.
-- PDF deliveries (the `(pdf)` events) aren't listed. See [PDF Delivery Events](pdf-delivery-events.md).
+- **Resend Reports** (or **Re-send** on a single delivery) sends the selected `(data)` events again. The event must still be ticked under **Events to Send**. `bulk_upload` events and PDF deliveries can't be re-sent.
+- **Find Missing Reports** sends `created` events, data and PDF, for reports created in the last 14 days. It skips the data event for any report that already has a delivery in the list, even a failed one, so use **Resend Reports** for failed JSON deliveries.
+- **PDF deliveries** (the `(pdf)` events) are listed with one row for each PDF in each scheduled run, including failed runs. The request shown is the name of the file that was sent, not a JSON body. A failed PDF delivery is retried automatically on the next run. See [PDF Delivery Events](pdf-delivery-events.md#what-to-expect).
 
 For bulk imports, see [SFTP processing and webhook delivery](../bulk-import.md#sftp-processing-and-webhook-delivery).
 

@@ -13,7 +13,7 @@ To set up an endpoint, see the [Webhooks Overview](overview.md). To check that a
 | `bulk_upload.completed` | Every file in a bulk upload has finished processing. |
 | `gpa_report.created (data)` and `(pdf)` | A GPA report is created, in Scholaro or through the GPA Report API. Sent once per report. |
 | `gpa_report.updated (data)` and `(pdf)` | A different grading scale is applied to the report, or the applicant name or report name is edited in the GPA Reports list. Sent every time. |
-| `digital_evaluation.created (data)` and `(pdf)` | A digital evaluation is created. Sent once per evaluation. |
+| `digital_evaluation.created (data)` and `(pdf)` | A digital evaluation is created. The `(data)` event is sent once per evaluation. The PDF can be generated more than once (see [PDF Delivery Events](pdf-delivery-events.md#created-and-updated-events)). |
 | `digital_evaluation.updated (data)` and `(pdf)` | A GPA report is linked to or unlinked from the evaluation, one of its custom fields is edited, or the applicant name or evaluation name is edited in the Evaluations list. Sent every time. |
 
 The `(pdf)` events are not sent at that moment. The PDF is generated when the event occurs and delivered in the next scheduled run, twice a day. See [PDF Delivery Events](pdf-delivery-events.md#how-it-works).
