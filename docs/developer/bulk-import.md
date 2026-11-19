@@ -40,7 +40,7 @@ If you have webhooks set up, a bulk import sends these events, in this order:
 | `bulk_upload.completed` | Every file has finished, or an SFTP upload was rejected | Once per batch |
 
 - Each event is sent only if it is ticked under **Events to Send** in the [Developer dashboard](https://www.scholaro.com/app/developer/webhooks).
-- Failed deliveries are not retried automatically (see [Reviewing deliveries](webhooks/overview.md#reviewing-deliveries)).
+- Failed deliveries of these events are not retried automatically (see [Reviewing deliveries](webhooks/overview.md#reviewing-deliveries)). PDF deliveries are different: see the note below.
 - `integrity_score` and `integrity_risk` are always `null` in `gpa_report.created` events for bulk-imported reports, because a bulk import doesn't run the Document Integrity Check.
 
 For every field in these payloads, see the [Events Reference](webhooks/events-reference.md#bulk-upload).
@@ -125,6 +125,7 @@ zip -r bulk-upload.zip . -x ".*" -x "__MACOSX/*"
 - PDFs are sent in a scheduled run twice a day, not when the batch completes. Allow up to 12 hours.
 - Check that `gpa_report.created (pdf)` is ticked under **Events to Send**, and that the endpoint it's assigned to is enabled.
 - If the event wasn't ticked when the batch ran, tick it and then use **Find Missing Reports** in the Developer dashboard.
+- Check the delivery list in the Developer dashboard. Each PDF has a row for every run it was sent in, with the response your endpoint returned. A PDF your endpoint didn't accept is sent again on each run for up to 7 days; it can't be re-sent with **Resend Reports**.
 
 See [PDF delivery for bulk-imported reports](#webhook-events-sent-during-a-bulk-import).
 

@@ -52,7 +52,8 @@ A report created just after a run waits for the next one, so allow up to 12 hour
 
 - **Only the latest PDF of a report is sent.** If a report has more than one PDF waiting, for example because it was created and then updated before the run, or updated several times, Scholaro sends the newest PDF once and discards the older ones. If the created PDF had not been sent yet, the delivery is still labelled as created.
 - **A rejected delivery is tried again.** If your endpoint doesn't accept a delivery, Scholaro tries again on each run for up to 7 days after the PDF was generated. Scholaro removes its copy of the PDF once your endpoint has accepted it.
-- **PDF deliveries aren't in the delivery list.** The delivery list in the Developer dashboard shows `(data)` events only.
+- **PDF deliveries are in the delivery list.** The delivery list in the Developer dashboard shows one row for each PDF in each run, including runs your endpoint rejected. On these rows **Report ID** is Scholaro's applicant number, not the report ID, and the request is the name of the file that was sent: the ZIP file for Slate, or the PDF for TargetX / Salesforce. See [Reviewing deliveries](overview.md#reviewing-deliveries).
+- **A PDF delivery can't be re-sent from the list.** **Resend Reports** only sends `(data)` events again. A rejected PDF delivery is tried again automatically, as described above.
 - **Find Missing Reports doesn't send PDFs early.** It generates the PDF for any report from the last 14 days that doesn't have one yet. Those PDFs are still sent in the next scheduled run.
 
 ## Slate delivery behavior
